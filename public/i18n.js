@@ -36,6 +36,9 @@ window.I18N = {
     manualTitle: 'Thêm hàng tự nhập', offline: 'Mất kết nối với máy chủ!', confirmClear: 'Xóa toàn bộ giỏ hàng?', yes: 'Đồng ý', no: 'Không',
     lowStock: 'Sắp hết', noResults: 'Không có kết quả', loading: 'Đang tải…', count: 'Số lượng', changePrice: 'Đổi giá',
     eetPendingText: 'Chưa gửi được lên EET — hệ thống sẽ tự gửi lại (luật cho phép trong 48 giờ).',
+    bulkImport: 'Nhập hàng loạt (dán danh sách)', bulkHint: 'Dán danh sách từ Excel, file text hoặc tin nhắn. Mỗi dòng 1 hàng, cột cách nhau bằng dấu ; hoặc Tab hoặc dấu phẩy. Thứ tự: mã vạch; tên; giá bán; thuế DPH; số lượng; giá nhập; đơn vị (mã vạch, thuế, số lượng có thể bỏ trống). Có thể có dòng tiêu đề.',
+    bulkModeAdd: 'Cộng thêm số lượng vào kho (nhập hàng)', bulkModeSet: 'Đặt tồn kho = số lượng (kiểm kê)', preview: 'Xem trước', openFile: 'Mở file .txt / .csv',
+    actCreate: 'Mới', actUpdate: 'Cập nhật', actSame: 'Không đổi', actError: 'Lỗi', applyImport: 'Lưu tất cả', importDone: 'Đã cập nhật hàng hóa',
     help: 'Trợ giúp', shortcuts: 'Phím tắt: F2 = Tiền mặt · F4 = Thẻ · Esc = Đóng/Hủy · F8 = Tìm hàng',
     err: {
       BAD_LOGIN: 'Sai mã PIN', LOCKED: 'Nhập sai quá nhiều lần. Đợi 5 phút.', UNAUTHORIZED: 'Hết phiên đăng nhập', FORBIDDEN: 'Chỉ quản lý mới được làm việc này',
@@ -44,7 +47,7 @@ window.I18N = {
       EET_NOT_CONFIGURED: 'Chưa cài đặt EET đủ (chứng chỉ, mã cơ sở, mã máy)', P12_INVALID: 'File chứng chỉ hoặc mật khẩu sai', P12_NO_EIC: 'Chứng chỉ không chứa mã EIČ',
       EET_BAD_UNIT: 'Mã cơ sở không đúng định dạng (chỉ chữ số)', EET_BAD_POS: 'Mã máy: tối đa 20 ký tự, chữ không dấu, số, - _ / .',
       BAD_ICO: 'IČO phải có 8 chữ số', ARES_NOT_FOUND: 'Không tìm thấy IČO trong ARES', ARES_UNAVAILABLE: 'ARES không phản hồi, thử lại sau',
-      LAST_ADMIN: 'Phải còn ít nhất 1 quản lý', BAD_QTY: 'Số lượng không hợp lệ', BAD_ITEM: 'Hàng không hợp lệ', NETWORK: 'Lỗi mạng', SERVER_ERROR: 'Lỗi máy chủ',
+      LAST_ADMIN: 'Phải còn ít nhất 1 quản lý', BAD_PRICE: 'Giá sai', NO_PRICE: 'Thiếu giá bán', NO_NAME: 'Thiếu tên hàng', BAD_PURCHASE: 'Giá nhập sai', BAD_BARCODE: 'Mã vạch sai', DUPLICATE_IN_LIST: 'Mã vạch bị trùng trong danh sách', BAD_QTY: 'Số lượng không hợp lệ', BAD_ITEM: 'Hàng không hợp lệ', NETWORK: 'Lỗi mạng', SERVER_ERROR: 'Lỗi máy chủ',
     },
   },
   cs: {
@@ -83,6 +86,9 @@ window.I18N = {
     manualTitle: 'Ruční položka', offline: 'Spojení se serverem přerušeno!', confirmClear: 'Vymazat celý účet?', yes: 'Ano', no: 'Ne',
     lowStock: 'Dochází', noResults: 'Nic nenalezeno', loading: 'Načítám…', count: 'Počet', changePrice: 'Změnit cenu',
     eetPendingText: 'Tržbu se zatím nepodařilo odeslat — systém ji odešle znovu automaticky (do 48 hodin).',
+    bulkImport: 'Hromadný import (vložit seznam)', bulkHint: 'Vložte seznam z Excelu, textového souboru nebo zprávy. Jeden řádek = jedno zboží, sloupce oddělené ; nebo tabulátorem nebo čárkou. Pořadí: kód; název; cena; DPH; množství; nákupní cena; jednotka (kód, DPH a množství lze vynechat). Může být i řádek s hlavičkou.',
+    bulkModeAdd: 'Přičíst množství ke skladu (příjem)', bulkModeSet: 'Nastavit sklad = množství (inventura)', preview: 'Náhled', openFile: 'Otevřít soubor .txt / .csv',
+    actCreate: 'Nové', actUpdate: 'Změna', actSame: 'Beze změny', actError: 'Chyba', applyImport: 'Uložit vše', importDone: 'Zboží aktualizováno',
     help: 'Nápověda', shortcuts: 'Zkratky: F2 = Hotově · F4 = Kartou · Esc = Zavřít · F8 = Hledat',
     err: {
       BAD_LOGIN: 'Špatný PIN', LOCKED: 'Příliš mnoho pokusů. Počkejte 5 minut.', UNAUTHORIZED: 'Přihlášení vypršelo', FORBIDDEN: 'Pouze pro správce',
@@ -91,7 +97,7 @@ window.I18N = {
       EET_NOT_CONFIGURED: 'EET není nastaveno (certifikát, ID jednotky, pokladna)', P12_INVALID: 'Špatný soubor certifikátu nebo heslo', P12_NO_EIC: 'Certifikát neobsahuje EIČ',
       EET_BAD_UNIT: 'ID evidenční jednotky – pouze číslice', EET_BAD_POS: 'Označení pokladny: max. 20 znaků bez diakritiky',
       BAD_ICO: 'IČO musí mít 8 číslic', ARES_NOT_FOUND: 'IČO nenalezeno v ARES', ARES_UNAVAILABLE: 'ARES neodpovídá, zkuste později',
-      LAST_ADMIN: 'Musí zůstat alespoň jeden správce', BAD_QTY: 'Neplatné množství', BAD_ITEM: 'Neplatná položka', NETWORK: 'Chyba sítě', SERVER_ERROR: 'Chyba serveru',
+      LAST_ADMIN: 'Musí zůstat alespoň jeden správce', BAD_PRICE: 'Špatná cena', NO_PRICE: 'Chybí cena', NO_NAME: 'Chybí název', BAD_PURCHASE: 'Špatná nákupní cena', BAD_BARCODE: 'Špatný kód', DUPLICATE_IN_LIST: 'Kód je v seznamu dvakrát', BAD_QTY: 'Neplatné množství', BAD_ITEM: 'Neplatná položka', NETWORK: 'Chyba sítě', SERVER_ERROR: 'Chyba serveru',
     },
   },
 };

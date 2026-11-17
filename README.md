@@ -16,6 +16,28 @@ Phần mềm tính tiền chạy trên trình duyệt, dùng được trên máy
 | 📊 **Báo cáo** | Doanh thu theo ngày, tiền mặt / thẻ, tổng hợp DPH, hàng bán chạy, doanh thu theo nhân viên. In báo cáo cuối ngày (uzávěrka), xuất CSV cho kế toán |
 | 👥 **Nhân viên** | Đăng nhập bằng mã PIN. **Thu ngân** chỉ được bán hàng và xem hóa đơn. **Quản lý** được làm tất cả: sửa giá, hủy hóa đơn, cài đặt |
 
+## Nhập hàng loạt (dán danh sách)
+
+Vào **Hàng hóa** hoặc **Nhập hàng** → **📋 Nhập hàng loạt**. Dán danh sách (từ Excel, file text, tin nhắn…) hoặc mở file `.txt/.csv`, bấm **Xem trước** để kiểm tra, rồi **Lưu tất cả**.
+
+Mỗi dòng 1 hàng, cột cách nhau bằng `;`, Tab hoặc dấu phẩy. Thứ tự cột:
+
+```
+mã vạch; tên; giá bán; thuế DPH; số lượng; giá nhập; đơn vị
+8594001234567; Rohlík; 4,20; 12; 50
+Nước mắm Phú Quốc 500ml; 89,90; 12; 20        ← không có mã vạch cũng được
+Gạo ST25 5kg, 249, 12%, 10
+```
+
+Có thể có dòng tiêu đề (`Mã vạch; Tên hàng; Giá bán; Thuế; Số lượng…` hoặc tiếng Séc `Kód; Název; Cena; DPH; Množství…`), khi đó thứ tự cột tùy ý.
+
+* Hàng **đã có** (cùng mã vạch hoặc cùng tên) → cập nhật giá / thuế / giá nhập và **cộng thêm** số lượng vào kho.
+* Hàng **chưa có** → tạo mới.
+* Chế độ **kiểm kê**: tồn kho được đặt bằng đúng số lượng trong danh sách.
+* Dòng sai (giá không phải số, thuế không hợp lệ…) bị bỏ qua và hiện rõ lỗi.
+
+Dùng từ dòng lệnh trên máy chủ: `node scripts/import.js danhsach.txt` (xem trước), thêm `--apply` để lưu, `--set` cho kiểm kê.
+
 ## Máy quét mã vạch
 
 Máy quét USB hay Bluetooth thông thường đều hoạt động như bàn phím: nó gõ dãy số rồi bấm Enter. Bạn chỉ cần cắm vào là dùng được, không phải cài gì thêm. Ở màn hình Bán hàng, khi quét, phần mềm luôn nhận mã kể cả lúc con trỏ đang ở chỗ khác.

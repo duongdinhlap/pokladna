@@ -6,6 +6,7 @@ const crypto = require('node:crypto');
 const { db, getSettings, setSetting, tx } = require('./db');
 const R = require('./receipts');
 const eet = require('./eet');
+const importer = require('./importer');
 const { ApiError } = R;
 
 const PORT = Number(process.env.PORT || 3000);
@@ -322,6 +323,15 @@ route('GET', '/api/stock/moves', ({ user, query }) => {
   needAdmin(user);
   return db.prepare(`SELECT m.*, p.name, p.unit FROM stock_moves m JOIN products p ON p.id = m.product_id
     WHERE m.type != 'sale' ${query.get('product') ? 'AND m.product_id = ' + Number(query.get('product')) : ''} ORDER BY m.id DESC LIMIT 200`).all();
+});
+
+// --- hromadný import ---
+route('POST', '/api/import', ({ user, body }) => {
+  needAdmin(user);
+  const text = String(body.text || '');
+  if (text.length > 1024 * 1024) throw new ApiError('TOO_LARGE', 413);
+  const mode = body.mode === 'set' ? 'set' : 'add';
+  return body.apply ? importer.apply(text, mode, user.name) : importer.plan(text, mode);
 });
 
 // --- doklady ---

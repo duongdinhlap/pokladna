@@ -639,7 +639,7 @@
   function viewProducts() {
     $('#main').innerHTML = `<div class="page"><div class="panel"><div class="row">
       <input class="inp" id="pq" placeholder="🔍 ${t('search')} / ${t('barcode')}" style="max-width:360px" autofocus>
-      <span class="spacer"></span><button class="btn primary big" id="addp">➕ ${t('newProduct')}</button></div></div>
+      <span class="spacer"></span><button class="btn big" id="bulkp">📋 ${t('bulkImport')}</button><button class="btn primary big" id="addp">➕ ${t('newProduct')}</button></div></div>
       <div class="panel" style="padding:.4rem" id="plist"></div></div>`;
     const draw = () => {
       const q = $('#pq').value.trim();
@@ -660,6 +660,7 @@
       else if (/^\d{4,}$/.test(v)) productForm({ barcode: v }, draw);
     });
     $('#addp').onclick = () => productForm({}, draw);
+    $('#bulkp').onclick = () => bulkImport(draw);
     draw();
   }
 
@@ -721,7 +722,7 @@
         <div class="scanbar" style="padding:0;border:0"><span class="ico" style="left:.7rem">▦</span><input id="sscan" class="inp" style="padding-left:2.4rem;font-size:1.15rem" placeholder="${t('scanHere')}" autocomplete="off" autofocus><div id="ssug"></div></div></div>
       <div class="panel" style="padding:.4rem" id="slines"></div>
       <div class="panel"><label class="f"><span>${t('note')}</span><input class="inp" id="snote" maxlength="120"></label>
-        <div class="row end"><button class="btn" id="hist">🕑 ${t('history')}</button><span class="spacer"></span><button class="btn primary big" id="ssave">💾 ${t('saveStockIn')}</button></div></div></div>`;
+        <div class="row end"><button class="btn" id="hist">🕑 ${t('history')}</button><button class="btn" id="bulk">📋 ${t('bulkImport')}</button><span class="spacer"></span><button class="btn primary big" id="ssave">💾 ${t('saveStockIn')}</button></div></div></div>`;
     const sc = $('#sscan');
     const addLine = (p) => {
       const ex = S.stockLines.find((l) => l.productId === p.id);
@@ -771,6 +772,7 @@
         S.stockLines = []; await loadProducts(); toast(t('saved'), 'ok'); viewStockIn();
       } catch (e) { showErr(e); }
     };
+    $('#bulk').onclick = () => bulkImport(() => viewStockIn());
     $('#hist').onclick = async () => {
       try {
         const rows = await api('GET', '/api/stock/moves');
@@ -779,6 +781,51 @@
       } catch (e) { showErr(e); }
     };
     draw();
+  }
+
+  // --- hromadný import ---
+  function bulkImport(after) {
+    const m = modal(`${head('📋 ' + t('bulkImport'))}
+      <p class="small muted">${t('bulkHint')}</p>
+      <textarea class="inp mono" id="btext" rows="9" style="font-size:.9rem" placeholder="8594001234567; Rohlík; 4,20; 12; 50&#10;Nước mắm Phú Quốc 500ml; 89,90; 12; 20&#10;Gạo ST25 5kg; 249; 12%; 10" autofocus></textarea>
+      <div class="row" style="margin:.5rem 0"><label class="btn sm">📂 ${t('openFile')}<input type="file" id="bfile" accept=".txt,.csv,.tsv,text/*" hidden></label></div>
+      <label class="chk"><input type="radio" name="bmode" value="add" checked> ${t('bulkModeAdd')}</label>
+      <label class="chk"><input type="radio" name="bmode" value="set"> ${t('bulkModeSet')}</label>
+      <div id="bprev"></div>
+      <div class="row end"><button class="btn" data-close>${t('cancel')}</button><button class="btn" id="bpv">👁 ${t('preview')}</button><button class="btn primary big" id="bap" disabled>💾 ${t('applyImport')}</button></div>`, { wide: true });
+    const mode = () => $('input[name=bmode]:checked', m.el).value;
+    const txt = $('#btext', m.el);
+    let last = null;
+    const label = { vat: 'vat', stock: 'stock', name: 'productName', unit: 'unit', barcode: 'barcode', price: 'price', purchase: 'purchasePrice' };
+    const ch = (k, [a, b]) => `${t(label[k])}: ${k === 'price' || k === 'purchase' ? `${fmt(a)} → <b>${fmt(b)}</b>` : `${esc(a ?? '')} → <b>${esc(b)}</b>`}`;
+    const TAG = { create: 'ok', update: 'pending', same: 'none', error: 'error' };
+    const ACT = { create: 'actCreate', update: 'actUpdate', same: 'actSame', error: 'actError' };
+    const prev = async () => {
+      try {
+        const p = await api('POST', '/api/import', { text: txt.value, mode: mode() });
+        last = txt.value + '|' + mode();
+        $('#bprev', m.el).innerHTML = `<div class="row" style="margin:.5rem 0">${Object.keys(TAG).map((a) => `<span class="tag ${TAG[a]}">${t(ACT[a])}: ${p.summary[a]}</span>`).join('')}</div>
+          <div style="max-height:40vh;overflow:auto"><table class="tbl"><tbody>${p.rows.map((r) => `<tr>
+            <td class="nowrap"><span class="tag ${TAG[r.action]}">${t(ACT[r.action])}</span></td>
+            <td>${r.action === 'create' ? `<b>${esc(r.product.name)}</b> · ${fmt(r.product.price)} · ${r.product.vat} % · ${t('stock')} ${r.product.stock}${r.product.barcode ? ' · <span class="mono">' + esc(r.product.barcode) + '</span>' : ''}`
+              : r.action === 'error' ? `<span class="muted">#${r.line}</span> ${esc(r.text)}<br><b style="color:var(--danger)">${r.errors.map(terr).join(', ')}</b>`
+              : `<b>${esc(r.productName)}</b>${r.action === 'update' ? '<br><span class="small">' + Object.entries(r.changes).map(([k, v]) => ch(k, v)).join(' · ') + '</span>' : ''}`}</td></tr>`).join('')}</tbody></table></div>`;
+        $('#bap', m.el).disabled = !(p.summary.create + p.summary.update);
+      } catch (e) { showErr(e); }
+    };
+    $('#bpv', m.el).onclick = prev;
+    txt.oninput = () => { $('#bap', m.el).disabled = true; };
+    $$('input[name=bmode]', m.el).forEach((r) => (r.onchange = () => { $('#bap', m.el).disabled = true; if (txt.value.trim()) prev(); }));
+    $('#bfile', m.el).onchange = async (e) => { const f = e.target.files[0]; if (f) { txt.value = await f.text(); prev(); } };
+    $('#bap', m.el).onclick = async () => {
+      if (last !== txt.value + '|' + mode()) return prev();
+      try {
+        const p = await api('POST', '/api/import', { text: txt.value, mode: mode(), apply: true });
+        await loadProducts();
+        toast(`${t('importDone')}: +${p.summary.create} / ~${p.summary.update}`, 'ok');
+        m.close(); after && after();
+      } catch (e) { showErr(e); }
+    };
   }
 
   // ======================================================================
