@@ -1,0 +1,17 @@
+{
+  "name": "pokladna",
+  "version": "1.0.0",
+  "description": "Pokladní systém s EET 2.0 a ARES",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node --no-warnings src/server.js",
+    "test": "node --no-warnings --test"
+  },
+  "dependencies": {
+    "node-forge": "^1.4.3"
+  },
+  "engines": {
+    "node": ">=22.13"
+  },
+  "private": true
+}
