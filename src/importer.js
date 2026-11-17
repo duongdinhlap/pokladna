@@ -48,21 +48,20 @@ function detectHeader(cells) {
 
 /** Rozpozná řádek bez hlavičky podle obsahu buněk. */
 function guessRow(cells, rates) {
-  const c = cells.map((x) => x.trim()).filter((x) => x !== '');
+  // Prázdné buňky zachovat – drží pozici sloupce (např. "kód;;;;5").
+  const c = cells.map((x) => x.trim());
+  while (c.length && c[c.length - 1] === '') c.pop();
   const r = {};
   let i = 0;
-  if (c[i] && isBarcode(c[i])) r.barcode = c[i++];
-  // název = první nečíselná buňka
-  while (i < c.length && money(c[i]) !== null && !r.name) i++;
-  if (c[i] !== undefined) r.name = c[i++];
-  if (!r.barcode && c[i] && isBarcode(c[i]) && c[i].length >= 8) r.barcode = c[i++];
-  const rest = c.slice(i);
-  if (rest.length) r.price = rest.shift();
-  // DPH: číslo s % nebo hodnota z povolených sazeb
-  if (rest.length && (/%$/.test(rest[0]) || (rates.includes(num(rest[0])) && rest.length >= 1 && /^\d{1,2}%?$/.test(rest[0])))) r.vat = rest.shift();
-  if (rest.length) r.qty = rest.shift();
-  if (rest.length) r.purchase = rest.shift();
-  if (rest.length && !/^\d/.test(rest[0])) r.unit = rest.shift();
+  if (isBarcode(c[0]) || (c[0] === '' && c.length > 1)) r.barcode = c[i++] || undefined;
+  r.name = c[i++];
+  r.price = c[i++];
+  // DPH jen pokud vypadá jako sazba (12, 21 %, prázdné…), jinak jde rovnou o množství.
+  const v = c[i];
+  if (v !== undefined && (v === '' || /%$/.test(v) || rates.includes(num(v)))) { r.vat = v; i++; }
+  r.qty = c[i++];
+  r.purchase = c[i++];
+  r.unit = c[i++];
   return r;
 }
 
