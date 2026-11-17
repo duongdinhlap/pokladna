@@ -58,7 +58,19 @@ Mở http://localhost:3000. Lần đầu mở, phần mềm yêu cầu tạo tà
 
 Dữ liệu được lưu trong thư mục `data/` (file `pokladna.db`). **Hãy sao lưu thư mục này mỗi ngày.**
 
-### Dùng online (từ nhiều máy hoặc từ điện thoại)
+### Đưa lên mạng bằng Railway (dễ nhất, ~5 USD/tháng)
+
+> ❌ **Không dùng được Netlify, Vercel, GitHub Pages.** Các dịch vụ đó chỉ chạy trang web tĩnh. Phần mềm này cần máy chủ chạy liên tục (lưu dữ liệu, gửi EET, tự gửi lại EET).
+
+1. Vào https://railway.com và đăng nhập bằng GitHub.
+2. Bấm **New Project → Deploy from GitHub repo** rồi chọn `pokladna`. Railway tự build bằng `Dockerfile`.
+3. **Thêm ổ lưu dữ liệu (bắt buộc, nếu không thì mỗi lần cập nhật sẽ mất hết hóa đơn):** bấm vào service → **Settings → Volumes → Add Volume**, Mount path: `/data`.
+4. **Settings → Networking → Generate Domain**. Railway cấp sẵn một địa chỉ dạng `pokladna-xxx.up.railway.app`, đã có HTTPS.
+5. Mở địa chỉ đó và **tạo ngay tài khoản quản lý**. Ai mở trang đầu tiên sẽ là người tạo tài khoản quản lý.
+
+Từ đó, mỗi lần đẩy code mới lên GitHub, Railway sẽ tự cập nhật. Dữ liệu trong `/data` vẫn được giữ nguyên.
+
+### Dùng máy chủ VPS riêng
 
 Thuê một máy chủ VPS rẻ (khoảng 100–150 Kč/tháng), rồi chạy bằng Docker:
 

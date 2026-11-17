@@ -6,6 +6,6 @@ COPY package*.json ./
 RUN npm ci --omit=dev
 COPY src ./src
 COPY public ./public
-VOLUME /data
+COPY scripts ./scripts
 EXPOSE 3000
 CMD ["node", "--no-warnings", "src/server.js"]
